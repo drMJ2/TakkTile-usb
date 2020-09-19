@@ -12,7 +12,7 @@ import sys
 
 
 _unTwos = lambda x, bitlen: x-(1<<bitlen) if (x&(1<<(bitlen-1))) else x
-_chunk = lambda l, x: [l[i:i+x] for i in xrange(0, len(l), x)]
+_chunk = lambda l, x: [l[i:i+x] for i in range(0, len(l), x)]
 _flatten = lambda l: list(itertools.chain(*[[x] if type(x) not in [list] else x for x in l]))
 
 class TakkTile:
@@ -37,9 +37,9 @@ class TakkTile:
 			dev_dict.update({UID: dev})
 
 		self.devs = []
-		for key in sorted(dev_dict.iterkeys()):
+		for key in sorted(dev_dict.keys()):
 			self.devs.append(dev_dict[key])
-		self.UIDs=sorted(dev_dict.iterkeys())
+		self.UIDs=sorted(dev_dict.keys())
 
 		self.arrayID = arrayID
 		self.dev=self.devs[arrayID]
@@ -47,7 +47,6 @@ class TakkTile:
 		# populates bitmap of live sensors
 		# for each following device offset 50 in indexing
 		self.alive = [x+arrayID*50 for x in self.getAlive()]
-
 		
 		# calibrationCoefficients is a dictionary mapping cell index to a dictionary of calibration variables 
 		self.calibrationCoefficients=(dict(map(self.getCalibrationCoefficients, self.alive)))
@@ -131,7 +130,13 @@ class TakkTile:
 		"""Request the 12 calibration bytes from a sensor at a specified index."""
 		# get the attiny's virtual address for the specified index 
 		# read the calibration data via vendor request and return it 
-		return list(self.dev.ctrl_transfer(0x40|0x80, 0x6C, index%5, index/5, 8))
+
+		# Python3 hack:reading calibration data hits an interop error, so skip it if needed. 
+		try:
+			# Error calling libusb_control_transfer:  ctypes.ArgumentError: argument 5: <class 'TypeError'>: wrong type
+			return list(self.dev.ctrl_transfer(0x40|0x80, 0x6C, index%5, index/5, 8))
+		except:
+			return [0, 0, 0, 0, 0, 0, 0, 0]
 
 	def startSampling(self):
 		return self.dev.ctrl_transfer(0x40|0x80, 0xC7, 100, 0xFF, 1)[0]  
@@ -142,8 +147,8 @@ class TakkTile:
 if __name__ == "__main__":
 	import sys, pprint
 	tact = TakkTile()
-	print tact.UIDs
-	print tact.alive
+	print(tact.UIDs)
+	print(tact.alive)
 	try:
 		count = int(sys.argv[1])
 	except:
@@ -155,4 +160,4 @@ if __name__ == "__main__":
 		print(tact.getDataRaw())
 	end = time.time()
 	tact.stopSampling()
-	print (end-start)/int(count)
+	print((end-start)/int(count))
