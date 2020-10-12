@@ -2,6 +2,36 @@
 
 This "HowTo" assumes you're running a modern version of the Ubuntu Linux distribution. Ubuntu has a low barrier to entry and provides a rock-solid development environment.
 
+* Verify board (TakkFast board only)
+Plug the TakkFast in a USB port. Open terminal window and type:
+
+lsusb
+
+and look for line which lists device 59e3:74c7
+
+Bus 002 Device 009: ID 59e3:74c7
+
+
+* Get the code.
+
+ > git clone --recursive git://github.com/TakkTile/TakkTile-usb.git
+
+* Install the PyUSB-1.0 Python module.
+
+ > cd TakkTile-usb/PyUSB; sudo python setup.py install
+ 
+ * update permissions
+ 
+ > sudo cp 71-takktile.rules /etc/udev/rules.d/
+
+### Use
+
+To get a single set of calibrated, compensated samples from the first row of the board, simply run
+
+ > sudo python TakkTile.py
+ 
+ 
+### Firmware install (not needed for the TakkFast board)
 * Get the AVR compiler toolchain. Note that the version included in most distributions' repositories is out of date and does not support Atmel's latest XMEGA parts.
 
  > sudo apt-get remove binutils-avr gcc-avr avr-libc
@@ -14,13 +44,6 @@ This "HowTo" assumes you're running a modern version of the Ubuntu Linux distrib
  
 The PPA through which these tools are available is maintained by Nonolith Labs: http://www.nonolithlabs.com
 
-* Get the code.
-
- > git clone --recursive git://github.com/TakkTile/TakkTile-usb.git
-
-* Install the PyUSB-1.0 Python module.
-
- > cd TakkTile-usb/PyUSB; sudo python setup.py install
 
 * With an [AVRISP-mkII](http://www.digikey.com/product-search/en/programmers-development-systems/in-circuit-programmers-emulators-and-debuggers/2621880?k=avrisp) programmer attached to the XMEGA on the board, install the bootloader and upload the firmware.
 
@@ -40,9 +63,3 @@ The PPA through which these tools are available is maintained by Nonolith Labs: 
 
  > make update
 
-
-### Use
-
-To get a single set of calibrated, compensated samples from the first row of the board, simply run
-
- > sudo python TakkTile.py
