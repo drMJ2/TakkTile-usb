@@ -5,11 +5,11 @@ This "HowTo" assumes you're running a modern version of the Ubuntu Linux distrib
 * Verify board (TakkFast board only)
 Plug the TakkFast in a USB port. Open terminal window and type:
 
-lsusb
+> lsusb
 
 and look for line which lists device 59e3:74c7
 
-Bus 002 Device 009: ID 59e3:74c7
+> Bus 002 Device 009: ID 59e3:74c7
 
 
 * Get the code.
